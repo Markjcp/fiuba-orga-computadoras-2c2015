@@ -2,3 +2,5 @@
 *.pbm
 .cproject
 .project
+*.o
+autcel
