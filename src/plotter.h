@@ -7,3 +7,6 @@ typedef struct {
 	
 	FILE *file_pointer;
 } plotter_params_t;
+
+void
+plot(plotter_params_t* params);

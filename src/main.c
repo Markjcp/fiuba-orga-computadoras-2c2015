@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <plotter_params.h>
+#include <plotter.h>
 
 int main(int argc, char * const argv[], char * const envp[]) {
 	FILE *output;

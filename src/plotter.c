@@ -6,7 +6,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <plotter_params.h>
+#include <plotter.h>
 
 void
 plot(plotter_params_t* params)
