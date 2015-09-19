@@ -18,8 +18,9 @@ int main(int argc, char * const argv[], char * const envp[]) {
 	plotter_params_t params;
 	params.output_file_pointer = output;
 	params.input_file_pointer = input;
-	params.width = 24;
-	params.height = 7;
+	params.width = 800;
+	params.height = 600;
+	params.rule = 30;
 	plot(&params);
 	return 0;
 }
