@@ -9,7 +9,7 @@ int main(int argc, char * const argv[], char * const envp[]) {
 		exit(1);
 	}
 	plotter_params_t params;
-	params.file_pointer = output;
+	params.output_file_pointer = output;
 	params.width = 24;
 	params.height = 7;
 	plot(&params);

@@ -11,9 +11,9 @@
 void
 plot(plotter_params_t* params)
 {
-	fprintf(params->file_pointer, "P2\n");
-	fprintf(params->file_pointer, "%u ", (unsigned) params->width);
-	fprintf(params->file_pointer, "%u\n", (unsigned) params->height);
+	fprintf(params->output_file_pointer, "P2\n");
+	fprintf(params->output_file_pointer, "%u ", (unsigned) params->width);
+	fprintf(params->output_file_pointer, "%u\n", (unsigned) params->height);
 
 	size_t width = params->width;
 	size_t height = params->height;
@@ -27,17 +27,40 @@ plot(plotter_params_t* params)
 			if( j % 2 == 0){
 				black_or_white = 1;
 			}
-			fprintf(params->file_pointer, "%i", black_or_white);
+			fprintf(params->output_file_pointer, "%i", black_or_white);
 			if(j < width -1){
-				fprintf(params->file_pointer, " ");
+				fprintf(params->output_file_pointer, " ");
 			}
 		}
 		if(i< height -1){
-			fprintf(params->file_pointer, "\n");
+			fprintf(params->output_file_pointer, "\n");
 		}
 	}
-	if(fclose(params->file_pointer)){
+	if(fclose(params->output_file_pointer)){
 		fprintf(stderr, "cannot close output file.\n");
 		exit(1);
 	}
 }
+
+unsigned int convertRule(unsigned int number, char result[8]) {
+	if(number > 255){
+		return -1;
+	}
+	unsigned int i= 0;
+	for(i=0; i<8;i++){
+		result[i]='0';
+	}
+
+	int rem;
+	unsigned int size = 7;
+	while (number!=0)
+	{
+		rem=number%2;
+		number/=2;
+		result[size]=rem+'0';
+		size--;
+	}
+	result[8] = '\0';
+	return 1;
+}
+
