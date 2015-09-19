@@ -19,7 +19,21 @@ plot(plotter_params_t* params)
 	size_t height = params->height;
 	int i, j = 0;
 
-	for(i = 0; i< height; i++)
+	char first_line[width*2];
+	if (fgets(first_line,width*2,params->input_file_pointer) == NULL){
+		fprintf(stderr, "Incorrect input file\n");
+		exit(1);
+	}
+
+	for (j = 0; j < width*2; j += 2) {
+		fprintf(params->output_file_pointer, "%c", first_line[j]);
+		if (j < width*2 - 2) {
+			fprintf(params->output_file_pointer, " ");
+		}
+	}
+	fprintf(params->output_file_pointer, "\n");
+
+	for(i = 0; i< height -1; i++)
 	{
 		for (j = 0; j < width; j++)
 		{
@@ -38,6 +52,10 @@ plot(plotter_params_t* params)
 	}
 	if(fclose(params->output_file_pointer)){
 		fprintf(stderr, "cannot close output file.\n");
+		exit(1);
+	}
+	if (fclose(params->input_file_pointer)) {
+		fprintf(stderr, "cannot close input file.\n");
 		exit(1);
 	}
 }
