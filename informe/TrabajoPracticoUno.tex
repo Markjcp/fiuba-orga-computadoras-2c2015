@@ -1,0 +1,138 @@
+\documentclass[9pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+
+\definecolor{grey}{rgb}{0.8,0.8,0.8}
+\usepackage{listings}
+
+%Configuración de lstlisting:
+\lstset{
+language=C,
+tabsize=4,
+basicstyle=\fontsize{11}{13}\ttfamily\footnotesize,
+showspaces=false,
+showstringspaces=false,
+captionpos=b,
+breaklines=true
+}
+
+\title{6620 - Organización de Computadoras}
+
+\author{Beltrán, Belén \\ (91718) \and Forlenza, Marcos \\ (87237)}
+
+\lhead{}
+\rhead{}
+\chead{}
+
+\cfoot{\thepage}
+\begin{document}
+\date{}
+
+\maketitle
+\thispagestyle{empty}
+\begin{abstract}
+El presente trabajo tiene como objetivo la familiarización con las herramientas de software que se utilizarán a lo largo de los siguientes trabajos prácticos, por lo que se lleva a cabo la implementación de un programa que resuelve cierta problemática detallada en los próximos apartados.
+\end{abstract}
+
+\tableofcontents
+\pagebreak
+
+\section{Introducción}
+El programa realizado consta de un computador de autómatas celulares para cierta regla arbitraria. Devuelve como resultado un archivo .pbm con la evolución de este autómata celular para cierta regla determinada.
+\par
+La implementación del programa se realizará en el lenguaje de programación C. Luego se ejecutará la aplicación sobre una plataforma \textit{NetBSD/MIPS-32} mediante el emulador \textit{GXEmul} \cite{GXEMUL}. 
+\bigskip
+
+\section{Compilación}
+	
+	La herramienta para compilar el código en lenguaje C será el \textit{GCC}.
+	\par
+	Para automatizar las tareas de compilación se hace uso de la herramienta \textit{GNU Make}. Los Makefiles utilizados para la compilación se incluyen junto al resto de los archivos fuentes del presente trabajo.
+\bigskip
+
+\section{Utilización}
+	
+Veamos ahora la forma en la que debe ser ejecutado el programa implementado en lenguaje C. El resultado de la compilación con ``make'' será un programa ejecutable, de nombre \textit{autcel}, que podrá ser invocado con los siguientes parámetros:
+\medskip
+
+\begin{itemize}
+
+\itemsep=2pt \topsep=0pt \partopsep=0pt \parskip=0pt \parsep=0pt
+\item \textit{-h}:  Imprime ayuda para la utilización del programa;
+\item \textit{-V}:  Imprimer la versión actual del programa;
+\item \textit{-o [Path]}: Especifica la ruta del archivo de salida sobre el cual se guarda la evolución generada por la aplicación.
+
+\end{itemize}
+
+Ejemplos: 
+\par
+{\ttfamily\footnotesize
+\$ ./autcel 30 80 inicial -o evolucion}
+\par
+Calcula la evolución del autómata "Regla 30", en un mundo unidimensional de 80 celdas por 80 iteraciones.
+\par
+El archivo de salida se llama evolucion.pbm
+\bigskip
+
+\section{Resultados Obtenidos}
+
+A continuación se muestran los resultados obtenidos para algunos casos de prueba:
+\par
+
+
+%Referencias
+\newpage
+\begin{thebibliography}{99}
+\bibitem{GXEMUL} The NetBSD project, \url{http://www.netbsd.org/}
+
+\bibitem{GCC} GCC, the GNU Compiler Collection, \url{http://gcc.gnu.org/}
+
+\bibitem{BS} PBM format speciffication, \url{http://netpbm.sourceforge.net/doc/pbm.html}
+
+\bibitem{HEN00} J. L. Hennessy and D. A. Patterson, ``Computer Architecture. A Quantitative
+Approach,'' 4th Edition, Morgan Kaufmann Publishers, 2000.
+
+\end{thebibliography}
+
+% Apendices
+\begin{appendices}
+
+\bigskip\bigskip
+
+% Implementación completa en lenguaje C
+\section{Implementación completa en lenguaje C}
+
+\subsection{\textit{main.c}. Implementación del main del programa}
+% Código
+\lstset{ language = C } % Cambiamos el lenguaje para que parsee en C
+\lstinputlisting[label=codemaincfull,caption=``main.c'']{../src/main.c} 
+\bigskip\bigskip
+
+\subsection{\textit{plotter.h}. Declaración de la librería Plotter}
+% Código
+\lstset{ language = C } % Cambiamos el lenguaje para que parsee en C
+\lstinputlisting[label=codePlotterhfull,caption=``plotter.h'']{../src/plotter.h} 
+\bigskip\bigskip
+
+\subsection{\textit{plotter.c}. Definición de la librería Plotter}
+% Código
+\lstset{ language = C } % Cambiamos el lenguaje para que parsee en C
+\lstinputlisting[label=codePlottercfull,caption=``plotter.c'']{../src/plotter.c} 
+\bigskip\bigskip
+
+\pagebreak %Salto de página
+
+
+\end{document}
