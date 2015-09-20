@@ -9,7 +9,7 @@
 #include <plotter.h>
 
 void plot(plotter_params_t* params) {
-	fprintf(params->output_file_pointer, "P2\n");
+	fprintf(params->output_file_pointer, "P1\n");
 	fprintf(params->output_file_pointer, "%u ", (unsigned) params->width);
 	fprintf(params->output_file_pointer, "%u\n", (unsigned) params->height);
 
@@ -62,6 +62,7 @@ void plot(plotter_params_t* params) {
 			to_print = decideNextChar(previous[previousIndex] == '1',previous[currentIndex] == '1',
 					previous[nextIndex] == '1', rule);
 			fprintf(params->output_file_pointer, "%c",to_print);
+			actual[j] = to_print;
 			if (j < width - 1) {
 				fprintf(params->output_file_pointer, " ");
 			}
@@ -96,7 +97,7 @@ char decideNextChar(unsigned int previous, unsigned int current,
 	if (!previous && current && !next) { //	010
 		result = rule[5];
 	}
-	if (!previous && current && next) { //	011
+	if (!previous && current && next) { //	011!previous && current && next
 		result = rule[4];
 	}
 	if (previous && !current && !next) { //	100

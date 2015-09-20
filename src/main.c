@@ -20,7 +20,7 @@ int main(int argc, char * const argv[], char * const envp[]) {
 	params.input_file_pointer = input;
 	params.width = 800;
 	params.height = 600;
-	params.rule = 30;
+	params.rule = 126;
 	plot(&params);
 	return 0;
 }
