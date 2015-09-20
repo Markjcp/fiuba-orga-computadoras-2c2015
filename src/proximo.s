@@ -98,7 +98,7 @@ tengoLosHnos:	mul t5, t2, 8 # t5 = nro de bloque * 8 -> dir del bloque
 				lb t8, t5 + t1 # t8 = bloque que tiene mi elemento
 
 				#Muevo a los bit menos significativos los bit que necesito
-				subu t5, 7, t3 # Busco cuanto tengo que correr el valor de t8
+				subu t5, 6, t3 # Busco cuanto tengo que correr el valor de t8
 				srl t8, t8, t5 # Dejo en los bits menos significativos al bit que necesito
 
 				#Si necesito al otro hno, hago un and logico
