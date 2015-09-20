@@ -1,3 +1,8 @@
+#ifndef USE_MIPS_ASSEMBLY
+#define USE_MIPS_ASSEMBLY
+#include <mips/regdef.h>
+#include <sys/syscall.h>
+
 # proximo.s : 	Evalua dos strings para ver si son equivalentes o no.
 # 				No toma en cuenta mayusculas y minusculas para la evaluacion.
 #
@@ -16,6 +21,7 @@
 #				- t6 -> bloque hno
 # 				- t7 -> bool: necesito al hno o no
 #				- t8 -> bloque ppal donde esta mi elemento
+#				- t9 -> regla
 
 .text
 .align 2
@@ -100,4 +106,14 @@ tengoLosHnos:	mul t5, t2, 8 # t5 = nro de bloque * 8 -> dir del bloque
 				and t8, t8, t6 # t8 = los 3 bits que necesito
 
 todoEnBloque:	# Hay que aplicar la regla
+				addu t9, zero, a3 # t9 = regla
+				srl t9, t9, t8 # me quedo en el bit menos significativo el dato que necesito
+				and t9, t9, 1 # pongo el resto en 0
 
+devuelvoRes:	addu v0, t9, zero # v0 = estado de la proxima iteracion
+				
+salir:			lw ra, 8(sp)
+		        lw fp, 4(sp)
+		        lw gp, 0(sp)
+		        addu sp, sp, 16
+		        jr ra
