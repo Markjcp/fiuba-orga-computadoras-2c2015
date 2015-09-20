@@ -3,10 +3,9 @@
 #include <mips/regdef.h>
 #include <sys/syscall.h>
 
-# proximo.s : 	Evalua dos strings para ver si son equivalentes o no.
-# 				No toma en cuenta mayusculas y minusculas para la evaluacion.
+# proximo.s : 	Devuelve el estado del elemento en la proxima iteracion
 #
-# Variables: 
+# Parametros: 
 #				- a0 -> dir del array
 #				- a1 -> int i (fila)
 #				- a2 -> int j (columna)
@@ -102,7 +101,7 @@ esElUltimo:		srl t6, t6, 7 # Dejo en los bits menos significativos al bit que ne
 marcar:			addu t7, 1, zero # Marco en t7 si utilizo t2 o no
 
 tengoLosHnos:	mul t5, t2, 8 # t5 = nro de bloque * 8 -> dir del bloque
-				lb t8, t5 + t1 # t8 = bloque que tiene mi elemento
+				lb t8, t5 + a0 # t8 = bloque que tiene mi elemento
 
 				#Muevo a los bit menos significativos los bit que necesito
 				beq ultimo, t3, 7
