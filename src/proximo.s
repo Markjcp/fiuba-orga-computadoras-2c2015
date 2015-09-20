@@ -9,12 +9,13 @@
 # Auxiliares:
 #				- t0 -> N (tamanio de la matriz cuadrada)
 #				- t1 -> dir inicial de la fila que necesito
-#				- t2 -> Elemento hermano (derecha o izq). En el bit necesario esta el dato y desp todos 0
-#				- t3 -> puntero para avanzar de a bytes en la fila
-#				- t4 -> j (va decrementando)
-#				- t5 -> aux
-#				- t6 -> Si t2 tiene valor util o no
-# 				- t7 -> El elemento que necesito
+#				- t2 -> Nro de bloque de 8 bits: cociente(j / 8)
+#				- t3 -> Posicion adentro del bloque: resto (j / 8)
+#				- t4 -> direccion del bloque hno
+#				- t5 ->	aux
+#				- t6 -> bloque hno
+# 				- t7 -> bool: necesito al hno o no
+#				- t8 -> bloque ppal donde esta mi elemento
 
 .text
 .align 2
@@ -32,41 +33,71 @@ proximo:		subu sp, sp, 16 # Se crea el SRA 16 y LTA 0 y ABA 0 = 16 bytes
 		        
 		        #Obtengo la fila que necesito
 		        mul t1, a1, t0 # t1 = i * N
-		        addu t1, t1, a1 # t1 = a + (i * N)
+		        addu t1, t1, a0 # t1 = a + (i * N)
 
 	        	#Busco la columna
-	        	#En caso de que busco el ultimo elemento, me quedo con el primer byte que contiene al hno derecho
-	        	bne sig, t0, a2 # Si (j == N) me quedo con el byte de la primer columna
-				addu t6, 1, zero # Marco en t6 si utilizo t2 o no
-				lw t2, (t1) # t2 = 1er byte de la fila
-				srl t2, t2, 7 # Dejo en el bit menos significativo el valor de la matriz
+	        	divu a2, 8 # en 'lo' guardo el cociente de j / 8 y en 'hi' guardo el resto
+	        	#Obtengo el nro de bloque de 8 bits
+	        	mflo t2 # t2 = j / 8
+	        	#Adentro del bloque, busco la posicion de mi dato
+	        	mfhi t3 # t3 = resto(j / 8)
 
-sig:			addu t3, t1, zero # t3 = t1
-				addu t4, a2, zero # t4 = j
+        		#Si estoy al inicio del bloque, el hno izquierdo esta en el bloque anterior
+        		beqz faltaHnoIzq, t3
 
-				#En caso de que busco al primer elemento, tambien necesito al ultimo de la fila que tiene al hno izq
-				bge loop, t4, 8 # si (j >= 8) loop. Osea no necesito el 1er byte
-				lw t2, (t3) # t2 = 1er byte. Necesito el 1er byte
-				addu t6, 1, zero # Marco en t6 si utilizo t2 o no
-				
-				#Me fijo si tengo que buscar el ultimo valor de la fila o no
-				bne sig2, t4, zero # si (j == 0) me falta el hno izquierdo que esta al final de la fila
-				addu t4, t0, zero # Guardo en t4 el valor de N, para buscar hasta el final de la fila
+        		#Si estoy en el medio del bloque, tengo los hnos que necesito
+        		ble tengoLosHnos, t3, 6
 
-sig2:			#Muevo a los bit menos significativos los bit que necesito
-				subu t5, 6, a2 # Busco cuanto tengo que correr el valor de t2
-				srl t2, t2, t5 # Dejo en los bits menos significativos a los bit que necesito
+        		#Si estoy al final del bloque, necesito al hno derecho que esta en el bloque siguiente
+        		beq faltaHnoDer, t3, 7
 
-loop:			subu t4, t4, 8 # j = j - 8 -> Decremento 'j' (que esta en copiado en t4)
-				addu t3, t3, 8 # a = a + 8 -> Aumento 'a' (que esta copiado en t3)
-				bgt loop, t4, 8 # si (j > 8) sigo buscando
+faltaHnoIzq:	#Si estoy en el primer bloque, necesito el ultimo bloque tambien
+				beqz ultimoBloque, t2
 
-				lw t7, (t3) # t7 = el byte que tiene mi dato
+				#Sino, necesito el anterior
+				subu t4, t2, 1 # t4 = nro bloque - 1
+				b obtenerBloque # Voy a obtener el bloque
+
+ultimoBloque:	divu t0, 8 # en 'lo' guardo el cociente de N / 8 y en 'hi' guardo el resto
+	        	#Obtengo el nro de bloque de 8 bits
+	        	mflo t4 # t4 = ultimo bloque
+				b obtenerBloque # Voy a obtener el bloque
+
+faltaHnoDer:	#Si estoy en el ultimo bloque, necesito el primero tambien
+				divu t0, 8 # en 'lo' guardo el cociente de N / 8 y en 'hi' guardo el resto
+	        	#Obtengo el nro de bloque de 8 bits
+	        	mflo t5 # t5 = ultimo bloque
+				beq primerBloque, t2, t5
+
+				#Sino, necesito el siguiente
+				addu t4, t2, 1 # t4 = nro bloque + 1
+				b obtenerBloque # Voy a obtener el bloque
+
+primerBloque:	addu t4, zero, zero # t4 = primer bloque
+				b obtenerBloque # Voy a obtener el bloque
+
+obtenerBloque:	mul t4, t4, 8 # t4 = t4 * 8 -> Dir del bloque
+				lb t6, t4 + t1 # t6 = el bloque que necesito extra
+	
 				#Muevo a los bit menos significativos los bit que necesito
-				subu t5, 6, t4 # Busco cuanto tengo que correr el valor de t2
-				srl t2, t2, t5 # Dejo en los bits menos significativos a los bit que necesito
+				beqz esElPrimero, t3
+				addu t5, zero, 7 # t5 = 7
+				b shift
+esElPrimero:	addu t5, zero, 4 # t5 = 4
+shift:			srl t6, t6, t5 # Dejo en los bits menos significativos al bit que necesito
 
-				bne sig3, t6, zero # Si (t6 == 0), osea uso a t2, guardo en un registro el valor de los 3 elementos
-				and t7, t7, t2 # Guardo en t7 al elemento completo
+				addu t7, 1, zero # Marco en t7 si utilizo t2 o no
 
-sig3:			#Hay que buscar la regla que corresponde ahora
+tengoLosHnos:	mul t5, t2, 8 # t5 = nro de bloque * 8 -> dir del bloque
+				lb t8, t5 + t1 # t8 = bloque que tiene mi elemento
+
+				#Muevo a los bit menos significativos los bit que necesito
+				subu t5, 7, t3 # Busco cuanto tengo que correr el valor de t8
+				srl t8, t8, t5 # Dejo en los bits menos significativos al bit que necesito
+
+				#Si necesito al otro hno, hago un and logico
+				beqz todoEnBloque, t7
+				and t8, t8, t6 # t8 = los 3 bits que necesito
+
+todoEnBloque:	# Hay que aplicar la regla
+
