@@ -21,6 +21,7 @@ int main(int argc, char * const argv[], char * const envp[]) {
 	params.width = 800;
 	params.height = 600;
 	params.rule = 126;
+	params.mips_impl = 0;
 	plot(&params);
 	return 0;
 }

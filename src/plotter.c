@@ -17,15 +17,8 @@ void plot(plotter_params_t* params) {
 	size_t height = params->height;
 	int i, j = 0;
 
-	char rule[8];
-	if(convertRule(params->rule,rule)==-1){
-		fprintf(stderr, "Incorrect rules\n");
-		exit(1);
-	}
-
 	char first_line[width * 2];
-	char previous[width];
-	char actual[width];
+	unsigned char matrix[height][width];
 	if (fgets(first_line, width * 2, params->input_file_pointer) == NULL) {
 		fprintf(stderr, "Incorrect input file\n");
 		exit(1);
@@ -34,45 +27,33 @@ void plot(plotter_params_t* params) {
 	i=0;
 	for (j = 0; j < width * 2; j += 2) {
 		fprintf(params->output_file_pointer, "%c", first_line[j]);
-		previous[i] = first_line[j];
+		matrix[0][i] = first_line[j];
 		if (j < width * 2 - 2) {
 			fprintf(params->output_file_pointer, " ");
 		}
 		i++;
 	}
-	previous[width]='\0';
 	fprintf(params->output_file_pointer, "\n");
 
-	for (i = 0; i < height - 1; i++) {
+	for (i = 1; i < height; i++) {
 		for (j = 0; j < width; j++) {
 			char to_print = '0';
-			unsigned int previousIndex = 0;
-			unsigned int currentIndex = j;
-			unsigned int nextIndex = 0;
-			if (j == 0) {
-				previousIndex = width - 1;
-			} else {
-				previousIndex = j - 1;
+
+			if(params->mips_impl){
+				to_print = proximo(matrix, i, j,params->rule, (unsigned int)width);
+			}else{
+				to_print = next_portable(matrix, i, j,params->rule, (unsigned int)width);
+
 			}
-			if (j == width) {
-				nextIndex = 0;
-			} else {
-				nextIndex = j + 1;
-			}
-			to_print = decideNextChar(previous[previousIndex] == '1',previous[currentIndex] == '1',
-					previous[nextIndex] == '1', rule);
+
 			fprintf(params->output_file_pointer, "%c",to_print);
-			actual[j] = to_print;
+			matrix[i][j] = to_print;
 			if (j < width - 1) {
 				fprintf(params->output_file_pointer, " ");
 			}
 		}
-		if (i < height - 1) {
+		if (i < height) {
 			fprintf(params->output_file_pointer, "\n");
-			int z = 0;
-			for (z = 0; z < width; z++) {
-				previous[z] = actual[z];
-			}
 		}
 	}
 	if (fclose(params->output_file_pointer)) {
@@ -115,7 +96,7 @@ char decideNextChar(unsigned int previous, unsigned int current,
 	return result;
 }
 
-unsigned int convertRule(unsigned int number, char result[8]) {
+unsigned int convertRule(unsigned char number, char result[8]) {
 	if (number > 255) {
 		return -1;
 	}
@@ -134,5 +115,31 @@ unsigned int convertRule(unsigned int number, char result[8]) {
 	}
 	result[8] = '\0';
 	return 1;
+}
+
+unsigned char next_portable(unsigned char *a, unsigned int i, unsigned int j,
+		unsigned char regla, unsigned int N) {
+
+	char rule[8];
+	if(convertRule(regla,rule)==-1){
+		fprintf(stderr, "Incorrect rules\n");
+		exit(1);
+	}
+
+	unsigned int previousIndex = 0;
+	unsigned int currentIndex = j;
+	unsigned int nextIndex = 0;
+	if (j == 0) {
+		previousIndex = N - 1;
+	} else {
+		previousIndex = j - 1;
+	}
+	if (j == N) {
+		nextIndex = 0;
+	} else {
+		nextIndex = j + 1;
+	}
+	return decideNextChar(a[(i - 1) * N + previousIndex] == '1',
+			a[(i - 1)* N + currentIndex] == '1', a[ (i - 1)*N + nextIndex] == '1', rule);
 }
 

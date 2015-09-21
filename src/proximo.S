@@ -1,5 +1,3 @@
-#ifndef USE_MIPS_ASSEMBLY
-#define USE_MIPS_ASSEMBLY
 #include <mips/regdef.h>
 #include <sys/syscall.h>
 
@@ -25,13 +23,14 @@
 .text
 .align 2
 .globl proximo
+.ent proximo
 
 
 proximo:		subu sp, sp, 16 # Se crea el SRA 16 y LTA 0 y ABA 0 = 16 bytes
 				sw ra, 8(sp)
-		        sw fp, 4(sp)
+		        sw $fp, 4(sp)
 		        sw gp, 0(sp)
-		        move fp, sp
+		        move $fp, sp
 
 		        #Obtengo el valor de N
 	        	lw t0, 32(sp) # t0 = N
@@ -52,16 +51,16 @@ proximo:		subu sp, sp, 16 # Se crea el SRA 16 y LTA 0 y ABA 0 = 16 bytes
 	        	addu t7, zero, zero
 
         		#Si estoy al inicio del bloque, el hno izquierdo esta en el bloque anterior
-        		beqz faltaHnoIzq, t3
+        		beqz t3, faltaHnoIzq
 
         		#Si estoy en el medio del bloque, tengo los hnos que necesito
-        		ble tengoLosHnos, t3, 6
+        		ble t3, 6, tengoLosHnos
 
         		#Si estoy al final del bloque, necesito al hno derecho que esta en el bloque siguiente
-        		beq faltaHnoDer, t3, 7
+        		beq t3, 7, faltaHnoDer
 
 faltaHnoIzq:	#Si estoy en el primer bloque, necesito el ultimo bloque tambien
-				beqz ultimoBloque, t2
+				beqz t2, ultimoBloque
 
 				#Sino, necesito el anterior
 				subu t4, t2, zero # t4 = nro bloque
@@ -76,7 +75,7 @@ faltaHnoDer:	#Si estoy en el ultimo bloque, necesito el primero tambien
 				divu t0, 8 # en 'lo' guardo el cociente de N / 8 y en 'hi' guardo el resto
 	        	#Obtengo el nro de bloque de 8 bits
 	        	mflo t5 # t5 = ultimo bloque
-				beq primerBloque, t2, t5
+				beq t2, t5, primerBloque
 
 				#Sino, necesito el siguiente
 				addu t4, t2, zero # t4 = nro bloque 
@@ -89,7 +88,7 @@ obtenerBloque:	mul t4, t4, 8 # t4 = t4 * 8 -> Dir del bloque
 				lb t6, t4 + a0 # t6 = el bloque que necesito extra
 	
 				#Muevo a los bit menos significativos los bit que necesito
-				beqz esElPrimero, t3
+				beqz t3, esElPrimero
 				b esElUltimo
 esElPrimero:	sll t6, t6, 2 # Es el hno izquierdo, lo muevo donde debe ir
 				and t6, t6, 4 # Dejo el resto en 0
@@ -104,7 +103,7 @@ tengoLosHnos:	mul t5, t2, 8 # t5 = nro de bloque * 8 -> dir del bloque
 				lb t8, t5 + a0 # t8 = bloque que tiene mi elemento
 
 				#Muevo a los bit menos significativos los bit que necesito
-				beq ultimo, t3, 7
+				beq t3, 7, ultimo
 				subu t5, 6, t3 # Busco cuanto tengo que correr el valor de t8
 				srl t8, t8, t5 # Dejo en los bits menos significativos al bit que necesito
 				and t8, t8, 7 # Dejo el resto en 0
@@ -115,7 +114,7 @@ ultimo: 		addu t5, zero, 1 # t5 = 1
 				and t8, t8, 6 # Dejo el resto en 0
 
 				#Si necesito al otro hno, hago un and logico
-necesitoHno:	beqz todoEnBloque, t7
+necesitoHno:	beqz t7, todoEnBloque
 				and t8, t8, t6 # t8 = los 3 bits que necesito
 
 todoEnBloque:	# Hay que aplicar la regla
@@ -126,7 +125,8 @@ todoEnBloque:	# Hay que aplicar la regla
 devuelvoRes:	addu v0, t9, zero # v0 = estado de la proxima iteracion
 				
 salir:			lw ra, 8(sp)
-		        lw fp, 4(sp)
+		        lw $fp, 4(sp)
 		        lw gp, 0(sp)
 		        addu sp, sp, 16
 		        jr ra
+.end			proximo
