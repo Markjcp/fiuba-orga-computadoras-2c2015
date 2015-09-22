@@ -6,7 +6,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <plotter.h>
+#include "plotter.h"
 
 void plot(plotter_params_t* params) {
 	fprintf(params->output_file_pointer, "P1\n");
@@ -40,9 +40,9 @@ void plot(plotter_params_t* params) {
 			char to_print = '0';
 
 			if(params->mips_impl){
-				to_print = proximo(matrix, i, j,params->rule, (unsigned int)width);
+				to_print = proximo(&matrix[0][0], i, j,params->rule, (unsigned int)width);
 			}else{
-				to_print = next_portable(matrix, i, j,params->rule, (unsigned int)width);
+				to_print = next_portable(&matrix[0][0], i, j,params->rule, (unsigned int)width);
 
 			}
 
@@ -97,9 +97,7 @@ char decideNextChar(unsigned int previous, unsigned int current,
 }
 
 unsigned int convertRule(unsigned char number, char result[8]) {
-	if (number > 255) {
-		return -1;
-	}
+	
 	unsigned int i = 0;
 	for (i = 0; i < 8; i++) {
 		result[i] = '0';
