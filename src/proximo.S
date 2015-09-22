@@ -85,7 +85,8 @@ primerBloque:	addu t4, zero, zero # t4 = primer bloque
 				b obtenerBloque # Voy a obtener el bloque
 
 obtenerBloque:	mul t4, t4, 8 # t4 = t4 * 8 -> Dir del bloque
-				lb t6, t4 + a0 # t6 = el bloque que necesito extra
+				addu t5, t4, a0 # t5 = dir del bloque + inicio matriz
+				lb t6, 0(t5) # t6 = el bloque que necesito extra
 	
 				#Muevo a los bit menos significativos los bit que necesito
 				beqz t3, esElPrimero
@@ -97,14 +98,16 @@ esElPrimero:	sll t6, t6, 2 # Es el hno izquierdo, lo muevo donde debe ir
 esElUltimo:		srl t6, t6, 7 # Dejo en los bits menos significativos al bit que necesito
 				and t6, t6, 1 # Dejo el resto en 0
 
-marcar:			addu t7, 1, zero # Marco en t7 si utilizo t2 o no
+marcar:			addu t7, zero, 1 # Marco en t7 si utilizo t2 o no
 
 tengoLosHnos:	mul t5, t2, 8 # t5 = nro de bloque * 8 -> dir del bloque
-				lb t8, t5 + a0 # t8 = bloque que tiene mi elemento
+				addu t5, t5, a0 # t5 = dir del bloque + inicio matriz
+				lb t8, 0(t5) # t8 = bloque que tiene mi elemento
 
 				#Muevo a los bit menos significativos los bit que necesito
 				beq t3, 7, ultimo
-				subu t5, 6, t3 # Busco cuanto tengo que correr el valor de t8
+				addu t5, zero, 6 # t5 = 6
+				subu t5, t5, t3 # Busco cuanto tengo que correr el valor de t8
 				srl t8, t8, t5 # Dejo en los bits menos significativos al bit que necesito
 				and t8, t8, 7 # Dejo el resto en 0
 				b necesitoHno
