@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "plotter.h"
+#include <plotter.h>
 
 int main(int argc, char * const argv[], char * const envp[]) {
 	FILE *output;
@@ -20,8 +20,7 @@ int main(int argc, char * const argv[], char * const envp[]) {
 	params.input_file_pointer = input;
 	params.width = 800;
 	params.height = 600;
-	params.rule = 126;
-	params.mips_impl = 1;
+	params.rule = 30;
 	plot(&params);
 	return 0;
 }

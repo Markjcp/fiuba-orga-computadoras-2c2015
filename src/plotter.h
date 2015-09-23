@@ -5,7 +5,6 @@ typedef struct {
 	size_t width;
 	size_t height;
 	unsigned char rule;
-	unsigned int mips_impl;
 	
 	FILE *output_file_pointer;
 	FILE *input_file_pointer;
@@ -23,6 +22,5 @@ decideNextChar(unsigned int previous, unsigned int current,unsigned int next, ch
 unsigned char next_portable
 (unsigned char *a, unsigned int i, unsigned int j, unsigned char regla, unsigned int N);
 
-extern unsigned char proximo
-(unsigned char *a, unsigned int i, unsigned int j, unsigned char regla, unsigned int N);
+
 

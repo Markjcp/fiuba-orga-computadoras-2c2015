@@ -6,7 +6,8 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include "plotter.h"
+#include <plotter.h>
+#include <proximo.h>
 
 void plot(plotter_params_t* params) {
 	fprintf(params->output_file_pointer, "P1\n");
@@ -39,13 +40,9 @@ void plot(plotter_params_t* params) {
 		for (j = 0; j < width; j++) {
 			char to_print = '0';
 
-			if(params->mips_impl){
-				to_print = proximo(&matrix[0][0], i, j,params->rule, (unsigned int)width);
-			}else{
-				to_print = next_portable(&matrix[0][0], i, j,params->rule, (unsigned int)width);
-
-			}
-
+			printf("Antes: \n");
+			to_print = proximo(&matrix[0][0], i, j,params->rule, (unsigned int)width);
+			printf("A imprimir: %i %i %c", i, j , to_print);
 			fprintf(params->output_file_pointer, "%c",to_print);
 			matrix[i][j] = to_print;
 			if (j < width - 1) {
@@ -64,36 +61,6 @@ void plot(plotter_params_t* params) {
 		fprintf(stderr, "cannot close input file.\n");
 		exit(1);
 	}
-}
-
-char decideNextChar(unsigned int previous, unsigned int current,
-		unsigned int next, char rule[8]) {
-	char result = '0';
-	if (!previous && !current && !next) { //	000
-		result = rule[7];
-	}
-	if (!previous && !current && next) { //	001
-		result = rule[6];
-	}
-	if (!previous && current && !next) { //	010
-		result = rule[5];
-	}
-	if (!previous && current && next) { //	011!previous && current && next
-		result = rule[4];
-	}
-	if (previous && !current && !next) { //	100
-		result = rule[3];
-	}
-	if (previous && !current && next) { //	101
-		result = rule[2];
-	}
-	if (previous && current && !next) { //	110
-		result = rule[1];
-	}
-	if (previous && current && next) { //		111
-		result = rule[0];
-	}
-	return result;
 }
 
 unsigned int convertRule(unsigned char number, char result[8]) {
@@ -115,29 +82,5 @@ unsigned int convertRule(unsigned char number, char result[8]) {
 	return 1;
 }
 
-unsigned char next_portable(unsigned char *a, unsigned int i, unsigned int j,
-		unsigned char regla, unsigned int N) {
 
-	char rule[8];
-	if(convertRule(regla,rule)==-1){
-		fprintf(stderr, "Incorrect rules\n");
-		exit(1);
-	}
-
-	unsigned int previousIndex = 0;
-	unsigned int currentIndex = j;
-	unsigned int nextIndex = 0;
-	if (j == 0) {
-		previousIndex = N - 1;
-	} else {
-		previousIndex = j - 1;
-	}
-	if (j == N) {
-		nextIndex = 0;
-	} else {
-		nextIndex = j + 1;
-	}
-	return decideNextChar(a[(i - 1) * N + previousIndex] == '1',
-			a[(i - 1)* N + currentIndex] == '1', a[ (i - 1)*N + nextIndex] == '1', rule);
-}
 
