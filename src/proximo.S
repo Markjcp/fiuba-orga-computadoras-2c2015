@@ -39,9 +39,10 @@ proximo:		subu sp, sp, 16 # Se crea el SRA 16 y LTA 0 y ABA 0 = 16 bytes
 				addu t9, zero, a3 # t9 = regla
 		        
 		        #Obtengo la fila que necesito
-		        subu t1, t0, 1 # t1 = N - 1
-		        mul t1, a1, t1 # t1 = i * (N - 1)
-		        addu t1, t1, a0 # t1 = a + [i * (N - 1)]
+		        subu t1, t0, zero # t1 = N
+		        mul t1, a1, t1 # t1 = i * N
+		        mul t1, t1, 8 # t1 = i * N * 8
+		        addu t1, t1, a0 # t1 = a + [i * N]
 
 	        	#Guardo el numero de bloque en cuestion
 	        	addu t3, a2, zero # t3 = j
@@ -74,26 +75,26 @@ tengoLosHnos:	#Guardo los hnos
 obtenerBloque:	mul t2, t2, 8 # t2 = t2 * 8 -> Dir del bloque
 				addu t5, t2, t1 # t5 = dir del bloque + inicio de la fila de matriz
 				lb t6, 0(t5) # t6 = el bloque izquierdo
-				srl t6, t6, 2 # Corro a donde necesito al hno izq
+				sll t6, t6, 2 # Corro a donde necesito al hno izq
 
 				mul t3, t3, 8 # t3 = t3 * 8 -> Dir del bloque
 				addu t5, t3, t1 # t5 = dir del bloque + inicio de la fila de matriz
 				lb t7, 0(t5) # t7 = el bloque en cuestion
-				srl t7, t7, 1 # Corro a donde necesito al bit en cuestion
+				sll t7, t7, 1 # Corro a donde necesito al bit en cuestion
 
 				mul t4, t4, 8 # t4 = t4 * 8 -> Dir del bloque
 				addu t5, t4, t1 # t5 = dir del bloque + inicio de la fila de matriz
 				lb t8, 0(t5) # t8 = el bloque derecho
 
 				#Uno a los 3 elementos en 1 para despues buscar la regla
-				and t5, t6, t7
-				and t5, t5, t8
+				or t5, t6, t7
+				or t5, t5, t8
 
 aplicarRegla:	# Hay que aplicar la regla
 				srl t9, t9, 1 # me quedo en el bit menos significativo el dato que necesito
-				and t9, t9, 1 # pongo el resto en 0
 				subu t5, t5, 1 # t5 = t5 - 1
 				bne t5, zero, aplicarRegla
+				and t9, t9, 1 # pongo el resto en 0
 
 devuelvoRes:	addu v0, t9, zero # v0 = estado de la proxima iteracion
 				
