@@ -75,26 +75,30 @@ tengoLosHnos:	#Guardo los hnos
 obtenerBloque:	mul t2, t2, 8 # t2 = t2 * 8 -> Dir del bloque
 				addu t5, t2, t1 # t5 = dir del bloque + inicio de la fila de matriz
 				lb t6, 0(t5) # t6 = el bloque izquierdo
+				subu t6, t6, 48 # Va a 0 o 1
 				sll t6, t6, 2 # Corro a donde necesito al hno izq
 
 				mul t3, t3, 8 # t3 = t3 * 8 -> Dir del bloque
 				addu t5, t3, t1 # t5 = dir del bloque + inicio de la fila de matriz
 				lb t7, 0(t5) # t7 = el bloque en cuestion
+				subu t7, t7, 48 # Va a 0 o 1
 				sll t7, t7, 1 # Corro a donde necesito al bit en cuestion
 
 				mul t4, t4, 8 # t4 = t4 * 8 -> Dir del bloque
 				addu t5, t4, t1 # t5 = dir del bloque + inicio de la fila de matriz
 				lb t8, 0(t5) # t8 = el bloque derecho
+				subu t8, t8, 48 # Va a 0 o 1
 
 				#Uno a los 3 elementos en 1 para despues buscar la regla
 				or t5, t6, t7
 				or t5, t5, t8
+				beq t5, zero, finRegla # Si es cero, no tengo que tocar regla, salto directo
 
 aplicarRegla:	# Hay que aplicar la regla
 				srl t9, t9, 1 # me quedo en el bit menos significativo el dato que necesito
 				subu t5, t5, 1 # t5 = t5 - 1
 				bne t5, zero, aplicarRegla
-				and t9, t9, 1 # pongo el resto en 0
+finRegla:		and t9, t9, 1 # pongo el resto en 0
 
 devuelvoRes:	addu v0, t9, zero # v0 = estado de la proxima iteracion
 				
