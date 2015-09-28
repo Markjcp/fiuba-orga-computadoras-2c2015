@@ -45,6 +45,7 @@ void plot(plotter_params_t* params) {
 			char to_print = '0';
 
 			to_print = proximo(&matrix[0][0], i, j,params->rule, (unsigned int)width);
+			//printf("Fila %i Columna %i Valor %c",i,j,to_print);
 			fprintf(params->output_file_pointer, "%c",to_print);
 			matrix[i][j] = to_print;
 			if (j < width - 1) {

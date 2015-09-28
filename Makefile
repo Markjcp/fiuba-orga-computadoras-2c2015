@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -c -Wall -I src/
+CFLAGS = -c -g -Wall -I src/
 PROG = autcel
 DEFAULT = generic
 SRC = src/

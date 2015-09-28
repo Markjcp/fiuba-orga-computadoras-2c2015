@@ -11,7 +11,6 @@ do_usage();
 void truncate_file_name(char* fileName);
 
 int main(int argc, char * const argv[], char * const envp[]) {
-
 	if(strcmp(argv[1],"-h")==0 || strcmp(argv[1],"--help")==0){
 		do_usage();
 		exit(0);
