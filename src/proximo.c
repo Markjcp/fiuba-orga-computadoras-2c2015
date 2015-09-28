@@ -47,7 +47,7 @@ unsigned char proximo(unsigned char *a, unsigned int i, unsigned int j,
 	} else {
 		previousIndex = j - 1;
 	}
-	if (j == N) {
+	if (j == N -1) {
 		nextIndex = 0;
 	} else {
 		nextIndex = j + 1;
